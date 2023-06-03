@@ -12,7 +12,7 @@ import java.util.Properties;
 public class HibernateUtils {
 
     private static SessionFactory sessionFactory;
-    private static final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    private static final ClassLoader CLASS_LOADER = Thread.currentThread().getContextClassLoader();
 
     private static SessionFactory createSessionFactory() {
         /*
@@ -22,9 +22,9 @@ public class HibernateUtils {
         Properties properties = new Properties();
         try {
             if (System.getProperty("test") != null) {
-                properties.load(classLoader.getResourceAsStream("hibernate-test.properties"));
+                properties.load(CLASS_LOADER.getResourceAsStream("hibernate-test.properties"));
             } else {
-                properties.load(classLoader.getResourceAsStream("hibernateImpl.properties"));
+                properties.load(CLASS_LOADER.getResourceAsStream("hibernateImpl.properties"));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -63,7 +63,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(EmployeeDTO employeeDTO) {
         Role role = roleRepository.findById(employeeDTO.getRoleId())
-                .orElseThrow(() -> new NoSuchElementException("role with id " + employeeDTO.getRoleId() + " not found"));
+                .orElseThrow(() ->
+                        new NoSuchElementException("role with id " + employeeDTO.getRoleId() + " not found"));
         return Employee.builder()
                 .firstname(employeeDTO.getFirstname())
                 .lastname(employeeDTO.getLastname())
