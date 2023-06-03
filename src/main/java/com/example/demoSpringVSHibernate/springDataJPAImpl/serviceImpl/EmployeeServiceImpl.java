@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +23,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO get(Long id) {
-        return createEmployeeDTO(employeeRepository.findById(id).orElseThrow());
+        return createEmployeeDTO(employeeRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("employee with id " + id + " not found")));
     }
 
     @Override
@@ -42,7 +44,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeDTO update(Long id, EmployeeDTO employeeDTO) {
-        Employee employeeFromDB = employeeRepository.findById(id).orElseThrow();
+        Employee employeeFromDB = employeeRepository.findById(id)
+                .orElseThrow((() -> new NoSuchElementException("employee with id " + id + " not found")));
         Employee employee = createEmployee(employeeDTO);
         employee.setId(id);
         employee.setCreatedAt(employeeFromDB.getCreatedAt());
@@ -52,14 +55,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public void delete(Long id) {
-        employeeRepository.findById(id).orElseThrow();
+        employeeRepository.findById(id)
+                .orElseThrow((() -> new NoSuchElementException("employee with id " + id + " not found")));
         employeeRepository.deleteById(id);
     }
 
     @Override
     public Employee createEmployee(EmployeeDTO employeeDTO) {
-        Role role = employeeDTO.getRoleId() == null
-                ? null : roleRepository.findById(employeeDTO.getRoleId()).orElse(null);
+        Role role = roleRepository.findById(employeeDTO.getRoleId())
+                .orElseThrow(() -> new NoSuchElementException("role with id " + employeeDTO.getRoleId() + " not found"));
         return Employee.builder()
                 .firstname(employeeDTO.getFirstname())
                 .lastname(employeeDTO.getLastname())

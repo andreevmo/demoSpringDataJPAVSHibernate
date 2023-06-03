@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO get(Long id) {
-        return createProjectDTO(projectRepository.findById(id).orElseThrow());
+        return createProjectDTO(projectRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found")));
     }
 
     @Override
@@ -42,7 +44,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public ProjectDTO update(Long id, ProjectDTO projectDTO) {
-        Project projectFromDB = projectRepository.findById(id).orElseThrow();
+        Project projectFromDB = projectRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found"));
         Project project = createProject(projectDTO);
         project.setId(id);
         project.setCreatedAt(projectFromDB.getCreatedAt());
@@ -52,14 +55,20 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public void delete(Long id) {
-        projectRepository.findById(id).orElseThrow();
+        projectRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found"));
         projectRepository.deleteById(id);
     }
 
     @Override
     public Project createProject(ProjectDTO projectDTO) {
-        Set<Employee> employees = projectDTO.getEmployeeIds() != null
-                ? employeeRepository.findEmployeesByIdIn(projectDTO.getEmployeeIds()) : null;
+        Set<Employee> employees = null;
+        if (projectDTO.getEmployeeIds() != null) {
+            employees = projectDTO.getEmployeeIds().stream()
+                    .map(id -> employeeRepository.findById(id)
+                            .orElseThrow(() -> new NoSuchElementException("employee with id " + id + " not found")))
+                    .collect(Collectors.toSet());
+        }
         return Project.builder()
                 .title(projectDTO.getTitle())
                 .employees(employees)

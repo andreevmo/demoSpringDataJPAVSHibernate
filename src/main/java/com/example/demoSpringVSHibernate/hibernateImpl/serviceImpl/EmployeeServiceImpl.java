@@ -30,7 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Session session = HibernateUtils.getSessionFactory().openSession();
         Employee employee = session.get(Employee.class, id);
         if (employee == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("employee with id " + id + " not found");
         }
         session.close();
         return employee;
@@ -66,7 +66,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Transaction transaction = session.beginTransaction();
         Employee employeeFromDB = session.get(Employee.class, id);
         if (employeeFromDB == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("employee with id " + id + " not found");
         }
         employeeFromDB.setFirstname(employeeDTO.getFirstname());
         employeeFromDB.setRole(roleService.getById(employeeDTO.getRoleId()));
@@ -82,7 +82,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Transaction transaction = session.beginTransaction();
         Employee employee = session.get(Employee.class, id);
         if (employee == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("employee with id " + id + " not found");
         }
         session.remove(employee);
         transaction.commit();

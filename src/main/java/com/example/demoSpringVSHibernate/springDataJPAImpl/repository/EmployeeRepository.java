@@ -4,8 +4,6 @@ import com.example.demoSpringVSHibernate.model.Employee;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
-
 @Repository
 public interface EmployeeRepository extends ListCrudRepository<Employee, Long> {
     /*
@@ -19,6 +17,5 @@ public interface EmployeeRepository extends ListCrudRepository<Employee, Long> {
         Employee findByFirstnameAndLastname(String firstname, String lastname);
 
     */
-    Set<Employee> findEmployeesByIdIn(Set<Long> ids);
 
 }

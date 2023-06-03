@@ -20,12 +20,12 @@ public class RoleServiceImpl implements RoleService {
 
     public Role getById(Long id) {
         if (id == null) {
-            return null;
+            throw new NullPointerException("id is null");
         }
         Session session = HibernateUtils.getSessionFactory().openSession();
         Role role = session.get(Role.class, id);
         if (role == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("role with id " + id + " not found");
         }
         session.close();
         return role;
@@ -60,7 +60,7 @@ public class RoleServiceImpl implements RoleService {
         Transaction transaction = session.beginTransaction();
         Role roleFromDB = session.get(Role.class, id);
         if (roleFromDB == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("role with id " + id + " not found");
         }
         roleFromDB.setName(roleDTO.getName());
         transaction.commit();
@@ -74,7 +74,7 @@ public class RoleServiceImpl implements RoleService {
         Transaction transaction = session.beginTransaction();
         Role role = session.get(Role.class, id);
         if (role == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("role with id " + id + " not found");
         }
         session.remove(role);
         transaction.commit();

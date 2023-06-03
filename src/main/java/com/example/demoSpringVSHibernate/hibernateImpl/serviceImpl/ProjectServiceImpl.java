@@ -29,7 +29,7 @@ public class ProjectServiceImpl implements ProjectService {
         Session session = HibernateUtils.getSessionFactory().openSession();
         Project project = session.get(Project.class, id);
         if (project == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("project with id " + id + " not found");
         }
         session.close();
         return project;
@@ -64,7 +64,7 @@ public class ProjectServiceImpl implements ProjectService {
         Transaction transaction = session.beginTransaction();
         Project projectFromDB = session.get(Project.class, id);
         if (projectFromDB == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("project with id " + id + " not found");
         }
         projectFromDB.setEmployees(employeeService.getEmployeesByIds(projectDTO.getEmployeeIds()));
         projectFromDB.setTitle(projectDTO.getTitle());
@@ -79,7 +79,7 @@ public class ProjectServiceImpl implements ProjectService {
         Transaction transaction = session.beginTransaction();
         Project project = session.get(Project.class, id);
         if (project == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("project with id " + id + " not found");
         }
         session.remove(project);
         transaction.commit();

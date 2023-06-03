@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,7 +20,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO get(Long id) {
-        return createRoleDTO(roleRepository.findById(id).orElseThrow());
+        return createRoleDTO(roleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found")));
     }
 
     @Override
@@ -36,7 +38,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public RoleDTO update(Long id, RoleDTO roleDTO) {
-        Role roleFromDB = roleRepository.findById(id).orElseThrow();
+        Role roleFromDB = roleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found"));
         roleFromDB.setName(roleDTO.getName());
         return createRoleDTO(roleRepository.save(roleFromDB));
     }
@@ -44,7 +47,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     public void delete(Long id) {
-        roleRepository.findById(id).orElseThrow();
+        roleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found"));
         roleRepository.deleteById(id);
     }
 
