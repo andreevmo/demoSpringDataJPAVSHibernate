@@ -19,7 +19,6 @@
 - gradle testHibernate: test part of Hibernate implementation;
 - gradle testSpringDataJPA: test part of Spring Data JPA implementation.
 
-### Routing:
+### Docs:
 
-- http://localhost:5000/app/spring  + /employees | /projects | /roles
-- http://localhost:5000/app/hibernate + /employees | /projects | /roles
+http://localhost:5000/swagger-ui.html
