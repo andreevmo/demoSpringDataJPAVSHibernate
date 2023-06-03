@@ -17,12 +17,18 @@ public class EmployeeControllerTest extends BaseEmployeeControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        setUpData(FULL_URL_EMPLOYEES_SPRING);
+        setUpDataRoles(FULL_URL_ROLES_SPRING);
+        setUpDataEmployee(FULL_URL_EMPLOYEES_SPRING);
     }
 
     @Test
-    public void testGet() {
-        testGet(FULL_URL_EMPLOYEES_SPRING);
+    public void testGet200() {
+        testGet200(FULL_URL_EMPLOYEES_SPRING);
+    }
+
+    @Test
+    public void testGet404() {
+        testGet404(FULL_URL_EMPLOYEES_SPRING);
     }
 
     @Test
@@ -31,17 +37,37 @@ public class EmployeeControllerTest extends BaseEmployeeControllerTest {
     }
 
     @Test
-    public void testPost() {
-        testPost(FULL_URL_EMPLOYEES_SPRING);
+    public void testPost200() {
+        testPost200(FULL_URL_EMPLOYEES_SPRING);
     }
 
     @Test
-    public void testPut() {
-        testPut(FULL_URL_ROLES_SPRING, FULL_URL_EMPLOYEES_SPRING);
+    public void testPost422() {
+        testPost422(FULL_URL_EMPLOYEES_SPRING);
     }
 
     @Test
-    public void testDelete() {
-        testDelete(FULL_URL_EMPLOYEES_SPRING);
+    public void testPut200() {
+        testPut200(FULL_URL_ROLES_SPRING, FULL_URL_EMPLOYEES_SPRING);
+    }
+
+    @Test
+    public void testPut404() {
+        testPut404(FULL_URL_ROLES_SPRING, FULL_URL_EMPLOYEES_SPRING);
+    }
+
+    @Test
+    public void testPut422() {
+        testPut422(FULL_URL_ROLES_SPRING, FULL_URL_EMPLOYEES_SPRING);
+    }
+
+    @Test
+    public void testDelete200() {
+        testDelete200(FULL_URL_EMPLOYEES_SPRING);
+    }
+
+    @Test
+    public void testDelete404() {
+        testDelete404(FULL_URL_EMPLOYEES_SPRING);
     }
 }

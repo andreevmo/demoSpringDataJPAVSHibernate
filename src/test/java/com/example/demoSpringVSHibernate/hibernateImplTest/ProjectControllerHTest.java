@@ -17,12 +17,17 @@ public class ProjectControllerHTest extends BaseProjectControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        setUpData(FULL_URL_PROJECTS_H);
+        setUpDataProjects(FULL_URL_PROJECTS_H);
     }
 
     @Test
-    public void testGet() {
-        testGet(FULL_URL_PROJECTS_H);
+    public void testGet200() {
+        testGet200(FULL_URL_PROJECTS_H);
+    }
+
+    @Test
+    public void testGet404() {
+        testGet404(FULL_URL_PROJECTS_H);
     }
 
     @Test
@@ -31,17 +36,37 @@ public class ProjectControllerHTest extends BaseProjectControllerTest {
     }
 
     @Test
-    public void testPost() {
-        testPost(FULL_URL_PROJECTS_H);
+    public void testPost200() {
+        testPost200(FULL_URL_PROJECTS_H);
     }
 
     @Test
-    public void testPut() {
-        testPut(FULL_URL_EMPLOYEES_H, FULL_URL_PROJECTS_H);
+    public void testPost422() {
+        testPost422(FULL_URL_PROJECTS_H);
     }
 
     @Test
-    public void testDelete() {
-        testDelete(FULL_URL_PROJECTS_H);
+    public void testPut200() {
+        testPut200(FULL_URL_ROLES_H, FULL_URL_EMPLOYEES_H, FULL_URL_PROJECTS_H);
+    }
+
+    @Test
+    public void testPut422() {
+        testPut422(FULL_URL_ROLES_H, FULL_URL_EMPLOYEES_H, FULL_URL_PROJECTS_H);
+    }
+
+    @Test
+    public void testPut404() {
+        testPut404(FULL_URL_ROLES_H, FULL_URL_EMPLOYEES_H, FULL_URL_PROJECTS_H);
+    }
+
+    @Test
+    public void testDelete200() {
+        testDelete200(FULL_URL_PROJECTS_H);
+    }
+
+    @Test
+    public void testDelete404() {
+        testDelete404(FULL_URL_PROJECTS_H);
     }
 }
