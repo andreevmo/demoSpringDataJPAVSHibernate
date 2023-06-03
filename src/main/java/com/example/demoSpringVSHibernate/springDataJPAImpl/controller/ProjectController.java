@@ -2,6 +2,8 @@ package com.example.demoSpringVSHibernate.springDataJPAImpl.controller;
 
 import com.example.demoSpringVSHibernate.DTO.ProjectDTO;
 import com.example.demoSpringVSHibernate.springDataJPAImpl.serviceImpl.ProjectServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ import static com.example.demoSpringVSHibernate.springDataJPAImpl.controller.Pro
 @RestController
 @RequestMapping(path = "${base-url-spring}" + PROJECT_CONTROLLER_PATH)
 @AllArgsConstructor
+@Tag(name = "Project with SpringDataJPA")
 public class ProjectController {
 
     public static final String PROJECT_CONTROLLER_PATH = "/projects";
@@ -29,12 +32,12 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ProjectDTO createProject(@RequestBody ProjectDTO project) {
+    public ProjectDTO createProject(@RequestBody @Valid ProjectDTO project) {
         return service.save(project);
     }
 
     @PutMapping(path = ID)
-    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO project) {
+    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody @Valid ProjectDTO project) {
         return service.update(id, project);
     }
 

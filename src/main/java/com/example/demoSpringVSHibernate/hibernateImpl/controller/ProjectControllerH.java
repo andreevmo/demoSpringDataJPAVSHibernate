@@ -2,6 +2,8 @@ package com.example.demoSpringVSHibernate.hibernateImpl.controller;
 
 import com.example.demoSpringVSHibernate.DTO.ProjectDTO;
 import com.example.demoSpringVSHibernate.hibernateImpl.serviceImpl.ProjectServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +12,7 @@ import static com.example.demoSpringVSHibernate.springDataJPAImpl.controller.Pro
 
 @RestController
 @RequestMapping(path = "${base-url-hibernate}" + PROJECT_CONTROLLER_PATH)
+@Tag(name = "Project with Hibernate")
 public class ProjectControllerH {
 
     public static final String PROJECT_CONTROLLER_PATH = "/projects";
@@ -27,12 +30,12 @@ public class ProjectControllerH {
     }
 
     @PostMapping
-    public ProjectDTO createProject(@RequestBody ProjectDTO project) {
+    public ProjectDTO createProject(@RequestBody @Valid ProjectDTO project) {
         return service.save(project);
     }
 
     @PutMapping(path = ID)
-    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO project) {
+    public ProjectDTO updateProject(@PathVariable @Valid Long id, @RequestBody ProjectDTO project) {
         return service.update(id, project);
     }
 

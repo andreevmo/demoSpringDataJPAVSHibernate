@@ -2,6 +2,8 @@ package com.example.demoSpringVSHibernate.hibernateImpl.controller;
 
 import com.example.demoSpringVSHibernate.DTO.EmployeeDTO;
 import com.example.demoSpringVSHibernate.hibernateImpl.serviceImpl.EmployeeServiceImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +12,7 @@ import static com.example.demoSpringVSHibernate.springDataJPAImpl.controller.Emp
 
 @RestController
 @RequestMapping(path = "${base-url-hibernate}" + EMPLOYEE_CONTROLLER_PATH)
+@Tag(name = "Employee with Hibernate")
 public class EmployeeControllerH {
 
     public static final String EMPLOYEE_CONTROLLER_PATH = "/employees";
@@ -27,12 +30,12 @@ public class EmployeeControllerH {
     }
 
     @PostMapping
-    public EmployeeDTO createEmployee(@RequestBody EmployeeDTO employee) {
+    public EmployeeDTO createEmployee(@RequestBody @Valid EmployeeDTO employee) {
         return service.save(employee);
     }
 
     @PutMapping(path = ID)
-    public EmployeeDTO updateEmployee(@PathVariable Long id, @RequestBody EmployeeDTO employee) {
+    public EmployeeDTO updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDTO employee) {
         return service.update(id, employee);
     }
 
