@@ -1,7 +1,7 @@
 package com.example.demoSpringVSHibernate.springDataJPAImpl.controller;
 
 import com.example.demoSpringVSHibernate.DTO.EmployeeDTO;
-import com.example.demoSpringVSHibernate.service.EmployeeService;
+import com.example.demoSpringVSHibernate.springDataJPAImpl.serviceImpl.EmployeeServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class EmployeeController {
 
     public static final String EMPLOYEE_CONTROLLER_PATH = "/employees";
     public static final String ID = "/{id}";
-    private EmployeeService service;
+    private EmployeeServiceImpl service;
 
     @GetMapping(path = ID)
     public EmployeeDTO getEmployee(@PathVariable Long id) {

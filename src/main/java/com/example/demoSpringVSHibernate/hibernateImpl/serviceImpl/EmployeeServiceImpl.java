@@ -3,12 +3,13 @@ package com.example.demoSpringVSHibernate.hibernateImpl.serviceImpl;
 import com.example.demoSpringVSHibernate.DTO.EmployeeDTO;
 import com.example.demoSpringVSHibernate.hibernateImpl.utils.HibernateUtils;
 import com.example.demoSpringVSHibernate.model.Employee;
+import com.example.demoSpringVSHibernate.model.Project;
 import com.example.demoSpringVSHibernate.model.Role;
 import com.example.demoSpringVSHibernate.service.EmployeeService;
+import com.example.demoSpringVSHibernate.service.ProjectService;
+import com.example.demoSpringVSHibernate.service.RoleService;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -16,17 +17,13 @@ import java.util.stream.Collectors;
 
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private RoleServiceImpl roleService;
-
     @Override
     public EmployeeDTO get(Long id) {
-        return createEmployeeDTO(getById(id));
+        return createEmployeeDTO(getEmployeeById(id));
     }
 
-    private Employee getById(Long id) {
-        if (id == null) {
-            return null;
-        }
+    @Override
+    public Employee getEmployeeById(Long id) {
         Session session = HibernateUtils.getSessionFactory().openSession();
         Employee employee = session.get(Employee.class, id);
         if (employee == null) {
@@ -49,62 +46,46 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDTO save(EmployeeDTO employeeDTO) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Employee employee = createEmployee(employeeDTO);
+    public EmployeeDTO save(EmployeeDTO dto) {
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Employee employee = createEmployee(dto);
         session.persist(employee);
-        transaction.commit();
-        session.close();
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createEmployeeDTO(employee);
     }
 
     @Override
-    public EmployeeDTO update(Long id, EmployeeDTO employeeDTO) {
-        roleService = new RoleServiceImpl();
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Employee employeeFromDB = session.get(Employee.class, id);
-        if (employeeFromDB == null) {
-            throw new NoSuchElementException("employee with id " + id + " not found");
-        }
-        employeeFromDB.setFirstname(employeeDTO.getFirstname());
-        employeeFromDB.setRole(roleService.getById(employeeDTO.getRoleId()));
-        employeeFromDB.setLastname(employeeDTO.getLastname());
-        transaction.commit();
-        session.close();
+    public EmployeeDTO update(Long id, EmployeeDTO dto) {
+        RoleServiceImpl roleService = new RoleServiceImpl();
+        ProjectServiceImpl projectService = new ProjectServiceImpl();
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Employee employeeFromDB = getEmployeeById(id);
+        employeeFromDB.setFirstname(dto.getFirstname());
+        employeeFromDB.setRole(roleService.getRoleById(dto.getRoleId()));
+        employeeFromDB.setLastname(dto.getLastname());
+        employeeFromDB.setProjects(projectService.getProjectsByIds(dto.getProjectIds()));
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createEmployeeDTO(employeeFromDB);
     }
 
     @Override
     public void delete(Long id) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Employee employee = session.get(Employee.class, id);
-        if (employee == null) {
-            throw new NoSuchElementException("employee with id " + id + " not found");
-        }
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Employee employee = getEmployeeById(id);
         session.remove(employee);
-        transaction.commit();
-        session.close();
+        HibernateUtils.commitTransactionAndCloseSession(session);
     }
 
-    @Override
-    public Employee createEmployee(EmployeeDTO employeeDTO) {
-        roleService = new RoleServiceImpl();
-        Role role = roleService.getById(employeeDTO.getRoleId());
+    private Employee createEmployee(EmployeeDTO employeeDTO) {
+        ProjectService projectService = new ProjectServiceImpl();
+        RoleService roleService = new RoleServiceImpl();
+        Role role = roleService.getRoleById(employeeDTO.getRoleId());
+        Set<Project> projects = projectService.getProjectsByIds(employeeDTO.getProjectIds());
         return Employee.builder()
                 .firstname(employeeDTO.getFirstname())
                 .lastname(employeeDTO.getLastname())
                 .role(role)
+                .projects(projects)
                 .build();
-    }
-
-    public Set<Employee> getEmployeesByIds(Set<Long> ids) {
-        Set<Employee> employees = new HashSet<>();
-        if (ids != null) {
-            ids.forEach(id -> employees.add(getById(id)));
-        }
-        return employees;
     }
 }

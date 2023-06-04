@@ -24,8 +24,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO get(Long id) {
-        return createProjectDTO(projectRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found")));
+        return createProjectDTO(getProjectById(id));
+    }
+
+    @Override
+    public Project getProjectById(Long id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found"));
     }
 
     @Override
@@ -37,31 +42,27 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ProjectDTO save(ProjectDTO projectDTO) {
-        return createProjectDTO(projectRepository.save(createProject(projectDTO)));
+    public ProjectDTO save(ProjectDTO dto) {
+        return createProjectDTO(projectRepository.save(createProject(dto)));
     }
 
     @Override
     @Transactional
-    public ProjectDTO update(Long id, ProjectDTO projectDTO) {
-        Project projectFromDB = projectRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found"));
-        Project project = createProject(projectDTO);
+    public ProjectDTO update(Long id, ProjectDTO dto) {
+        Project project = createProject(dto);
         project.setId(id);
-        project.setCreatedAt(projectFromDB.getCreatedAt());
+        project.setCreatedAt(getProjectById(id).getCreatedAt());
         return createProjectDTO(projectRepository.save(project));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        projectRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("project with id " + id + " not found"));
+        getProjectById(id);
         projectRepository.deleteById(id);
     }
 
-    @Override
-    public Project createProject(ProjectDTO projectDTO) {
+    private Project createProject(ProjectDTO projectDTO) {
         Set<Employee> employees = null;
         if (projectDTO.getEmployeeIds() != null) {
             employees = projectDTO.getEmployeeIds().stream()

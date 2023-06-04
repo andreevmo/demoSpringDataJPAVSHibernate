@@ -5,7 +5,6 @@ import com.example.demoSpringVSHibernate.hibernateImpl.utils.HibernateUtils;
 import com.example.demoSpringVSHibernate.model.Role;
 import com.example.demoSpringVSHibernate.service.RoleService;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,13 +14,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO get(Long id) {
-        return createRoleDTO(getById(id));
+        return createRoleDTO(getRoleById(id));
     }
 
-    public Role getById(Long id) {
-        if (id == null) {
-            throw new NullPointerException("id is null");
-        }
+    @Override
+    public Role getRoleById(Long id) {
         Session session = HibernateUtils.getSessionFactory().openSession();
         Role role = session.get(Role.class, id);
         if (role == null) {
@@ -44,47 +41,28 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO save(RoleDTO roleDTO) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Role role = createRole(roleDTO);
+    public RoleDTO save(RoleDTO dto) {
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Role role = createRole(dto);
         session.persist(role);
-        transaction.commit();
-        session.close();
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createRoleDTO(role);
     }
 
     @Override
-    public RoleDTO update(Long id, RoleDTO roleDTO) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Role roleFromDB = session.get(Role.class, id);
-        if (roleFromDB == null) {
-            throw new NoSuchElementException("role with id " + id + " not found");
-        }
-        roleFromDB.setName(roleDTO.getName());
-        transaction.commit();
-        session.close();
+    public RoleDTO update(Long id, RoleDTO dto) {
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Role roleFromDB = getRoleById(id);
+        roleFromDB.setName(dto.getName());
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createRoleDTO(roleFromDB);
     }
 
     @Override
     public void delete(Long id) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Role role = session.get(Role.class, id);
-        if (role == null) {
-            throw new NoSuchElementException("role with id " + id + " not found");
-        }
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Role role = getRoleById(id);
         session.remove(role);
-        transaction.commit();
-        session.close();
-    }
-
-    @Override
-    public Role createRole(RoleDTO roleDTO) {
-        return Role.builder()
-                .name(roleDTO.getName())
-                .build();
+        HibernateUtils.commitTransactionAndCloseSession(session);
     }
 }

@@ -4,9 +4,9 @@ import com.example.demoSpringVSHibernate.DTO.ProjectDTO;
 import com.example.demoSpringVSHibernate.hibernateImpl.utils.HibernateUtils;
 import com.example.demoSpringVSHibernate.model.Employee;
 import com.example.demoSpringVSHibernate.model.Project;
+import com.example.demoSpringVSHibernate.service.EmployeeService;
 import com.example.demoSpringVSHibernate.service.ProjectService;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,17 +15,13 @@ import java.util.stream.Collectors;
 
 public class ProjectServiceImpl implements ProjectService {
 
-    EmployeeServiceImpl employeeService;
-
     @Override
     public ProjectDTO get(Long id) {
-        return createProjectDTO(getById(id));
+        return createProjectDTO(getProjectById(id));
     }
 
-    private Project getById(Long id) {
-        if (id == null) {
-            return null;
-        }
+    @Override
+    public Project getProjectById(Long id) {
         Session session = HibernateUtils.getSessionFactory().openSession();
         Project project = session.get(Project.class, id);
         if (project == null) {
@@ -48,48 +44,40 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO save(ProjectDTO projectDTO) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Project project = createProject(projectDTO);
+    public ProjectDTO save(ProjectDTO dto) {
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Project project = createProject(dto);
         session.persist(project);
-        transaction.commit();
-        session.close();
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createProjectDTO(project);
     }
 
     @Override
-    public ProjectDTO update(Long id, ProjectDTO projectDTO) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Project projectFromDB = session.get(Project.class, id);
-        if (projectFromDB == null) {
-            throw new NoSuchElementException("project with id " + id + " not found");
-        }
-        projectFromDB.setEmployees(employeeService.getEmployeesByIds(projectDTO.getEmployeeIds()));
-        projectFromDB.setTitle(projectDTO.getTitle());
-        transaction.commit();
-        session.close();
+    public ProjectDTO update(Long id, ProjectDTO dto) {
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Project projectFromDB = getProjectById(id);
+        projectFromDB.setEmployees(new EmployeeServiceImpl().getEmployeesByIds(dto.getEmployeeIds()));
+        projectFromDB.setTitle(dto.getTitle());
+        HibernateUtils.commitTransactionAndCloseSession(session);
         return createProjectDTO(projectFromDB);
     }
 
     @Override
     public void delete(Long id) {
-        Session session = HibernateUtils.getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Project project = session.get(Project.class, id);
-        if (project == null) {
-            throw new NoSuchElementException("project with id " + id + " not found");
-        }
+        Session session = HibernateUtils.openSessionAndBeginTransaction();
+        Project project = getProjectById(id);
         session.remove(project);
-        transaction.commit();
-        session.close();
+        HibernateUtils.commitTransactionAndCloseSession(session);
     }
 
-    @Override
-    public Project createProject(ProjectDTO projectDTO) {
-        employeeService = new EmployeeServiceImpl();
-        Set<Employee> employees = employeeService.getEmployeesByIds(projectDTO.getEmployeeIds());
+    private Project createProject(ProjectDTO projectDTO) {
+        EmployeeService employeeService = new EmployeeServiceImpl();
+        Set<Employee> employees = null;
+        if (projectDTO.getEmployeeIds() != null) {
+            employees = projectDTO.getEmployeeIds().stream()
+                    .map(employeeService::getEmployeeById)
+                    .collect(Collectors.toSet());
+        }
         return Project.builder()
                 .title(projectDTO.getTitle())
                 .employees(employees)

@@ -20,8 +20,13 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO get(Long id) {
-        return createRoleDTO(roleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found")));
+        return createRoleDTO(getRoleById(id));
+    }
+
+    @Override
+    public Role getRoleById(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found"));
     }
 
     @Override
@@ -31,31 +36,22 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public RoleDTO save(RoleDTO roleDTO) {
-        return createRoleDTO(roleRepository.save(createRole(roleDTO)));
+    public RoleDTO save(RoleDTO dto) {
+        return createRoleDTO(roleRepository.save(createRole(dto)));
     }
 
     @Override
     @Transactional
-    public RoleDTO update(Long id, RoleDTO roleDTO) {
-        Role roleFromDB = roleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found"));
-        roleFromDB.setName(roleDTO.getName());
+    public RoleDTO update(Long id, RoleDTO dto) {
+        Role roleFromDB = getRoleById(id);
+        roleFromDB.setName(dto.getName());
         return createRoleDTO(roleRepository.save(roleFromDB));
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        roleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("role with id " + id + " not found"));
+        getRoleById(id);
         roleRepository.deleteById(id);
-    }
-
-    @Override
-    public Role createRole(RoleDTO roleDTO) {
-        return Role.builder()
-                .name(roleDTO.getName())
-                .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.example.demoSpringVSHibernate.springDataJPAImpl.controller;
 
 import com.example.demoSpringVSHibernate.DTO.RoleDTO;
-import com.example.demoSpringVSHibernate.service.RoleService;
+import com.example.demoSpringVSHibernate.springDataJPAImpl.serviceImpl.RoleServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class RoleController {
 
     public static final String ROLES_CONTROLLER_PATH = "/roles";
     public static final String ID = "/{id}";
-    private RoleService service;
+    private RoleServiceImpl service;
 
     @GetMapping(path = ID)
     public RoleDTO getRole(@PathVariable Long id) {

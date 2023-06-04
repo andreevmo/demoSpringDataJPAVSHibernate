@@ -19,30 +19,35 @@ public class CustomException {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public String generalExceptionHandler(Exception exception) {
+        exception.printStackTrace();
         return exception.getMessage();
     }
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
     public String noSuchElementExceptionHandler(NoSuchElementException exception) {
+        exception.printStackTrace();
         return exception.getMessage();
     }
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler({HttpMessageNotReadableException.class})
     public String validationExceptionsHandler(Exception exception) {
+        exception.printStackTrace();
         return exception.getMessage();
     }
 
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String validationExceptionsHandler(MethodArgumentNotValidException exception) {
+        exception.printStackTrace();
         return exception.getMessage();
     }
 
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public String validationExceptionsHandler(DataIntegrityViolationException exception) {
+        exception.printStackTrace();
         return exception.getMessage();
     }
 }
